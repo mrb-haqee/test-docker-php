@@ -1,1 +1,41 @@
-c:\Users\Lenovo\Desktop\New folder (2)\index.php
+services:
+  - name: db
+    image: mysql:latest
+    envVars:
+      - key: MYSQL_DATABASE
+        value: php_docker
+      - key: MYSQL_USER
+        value: php_docker
+      - key: MYSQL_PASSWORD
+        from_secret: mysql_password
+      - key: MYSQL_ALLOW_EMPTY_PASSWORD
+        value: "1"
+    volumes:
+      - type: volume
+        name: db
+        mountPath: /var/lib/mysql
+  - name: www
+    image: php:apache
+    envVars: []
+    volumes:
+      - type: bind
+        source: .
+        target: /var/www/html
+    ports:
+      - port: 80
+      - port: 443
+  - name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    envVars: []
+    ports:
+      - port: 8001
+    envVars:
+      - key: PMA_HOST
+        value: db
+      - key: PMA_PORT
+        value: "3306"
+
+volumes:
+  - name: db
+    type: host
+    source: null
